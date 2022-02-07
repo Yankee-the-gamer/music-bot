@@ -49,6 +49,7 @@ class YTDLSource(discord.PCMVolumeTransformer):
 class music(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.queue = {}
         
     @commands.command()
     async def play(self, ctx, url):
@@ -58,9 +59,12 @@ class music(commands.Cog):
 
         vc = user_vc.channel
         vc = await vc.connect()
+        
+        if ctx.guild.id not in self.queue:
+            self.queue[ctx.guild.id] = []
 
         player = await YTDLSource.from_url(url, loop=self.bot.loop, stream=True)
-        ctx.voice_client.play(player, after=lambda e: print(f'Player error: {e}') if e else None)
+        ctx.voice_client.play(player, after=lambda e: print(f'done') )
 
         await ctx.send(f'Now playing: {player.title}')
         
